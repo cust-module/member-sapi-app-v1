@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="update-member-implementationFlow" doc:id="46c8b8b3-5a7e-4f5a-ae48-056f25e0d8f0" >
+		<ee:transform doc:name="Transform Message" doc:id="1be758be-2916-4a3a-a2de-cbdaee3a20de">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[{
+	firstName__c : vars.requestPayload.firstName,
+	lastName__c : vars.requestPayload.lastName,
+	maritalStatus__c : vars.requestPayload.maritalStatus,
+	title__c : vars.requestPayload.title,
+	gender__c : vars.requestPayload.gender,
+	occupation__c : vars.requestPayload.occupation,
+	preferredName__c : vars.requestPayload.preferredName,
+	password__c : vars.requestPayload.identity.password,
+	phoneCountry__c : vars.requestPayload.identity.phoneCountry,
+	phoneNumber__c : vars.requestPayload.identity.phoneNumber,
+	email__c : vars.requestPayload.identity.email,
+	city__c : vars.requestPayload.address.city,
+	area__c : vars.requestPayload.address.area,
+	province__c : vars.requestPayload.address.province,
+	placeOfResidence__c : vars.requestPayload.address.placeOfResidence
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:upsert doc:name="Upsert" doc:id="fb625686-e0cb-4732-a412-d87babdc9e3f" config-ref="Salesforce_Config" objectType="member__c" externalIdFieldName="Name"/>
+		<ee:transform doc:name="Transform Message" doc:id="56b04603-b352-456e-9342-40a61c9d189c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  msg: "success operation",
+  code: 200,
+  data: {
+    memberId: payload.item[0].id
+  },
+  success: true
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

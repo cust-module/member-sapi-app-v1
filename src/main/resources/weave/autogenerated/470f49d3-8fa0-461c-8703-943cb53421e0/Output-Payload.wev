@@ -1,0 +1,28 @@
+%dw 2.0
+
+type auto_470f49d3_8fa0_461c_8703_943cb53421e0_Output_Payload = {
+  firstName: String, 
+  lastName?: String, 
+  occupation?: String, 
+  address: {
+    area: String, 
+    country: "United States" | "Australia" | "India", 
+    city: String, 
+    placeOfResidence: String, 
+    phoneCountry: String, 
+    _?: Any
+  }, 
+  gender: "Others" | "Male" | "Female", 
+  identity: {
+    password: String, 
+    phoneNumber: String, 
+    email: String, 
+    phoneCountry: String, 
+    _?: Any
+  }, 
+  preferredName?: String, 
+  title: "Mr" | "Mrs", 
+  maritalStatus?: String, 
+  _?: Any
+} {"description": "This is success response for get member details API."}
+

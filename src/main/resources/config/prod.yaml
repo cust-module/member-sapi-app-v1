@@ -1,0 +1,12 @@
+sfdc:
+  security:
+    username: "rajashekar@sageitinc.com"
+    password: "![zgeO7uh6/giOh6AIxc5C6w==]"
+    token: "![yYLDRrUJjtO4lO0tOglcAfrRpm4GCVhYvawA6N5HAkk=]"
+    
+http:
+  listner:
+    host: "0.0.0.0"
+    port: "8081"
+api:
+  instanceId: "18540487"

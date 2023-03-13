@@ -1,0 +1,35 @@
+%dw 2.0
+
+type auto_e0faeb58_ff5c_4af7_8a40_beeb9ded2065_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|
+    "X-Cms-ClientId": String, 
+    "X-Cms-ClientSecret": String, 
+    "X-Cms-TransactionId": String, 
+    "X-Cms-Channel": "Mobile" | "WebApp", 
+    "X-Cms-OriginLanguage": "ch" | "en" | "cn", 
+    "X-Cms-OriginMarket": "United States" | "UK" | "India"
+  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|
+    email?: String, 
+    phoneCountry?: String, 
+    phoneNumber?: String, 
+    registrationDate?: String
+  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+

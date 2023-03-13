@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
-    <http:listener-config name="member-system-api-httpListenerConfig">
-        <http:listener-connection host="0.0.0.0" port="8081" />
-    </http:listener-config>
-    <apikit:config name="member-system-api-config" api="resource::8b20d0cc-4acf-4f1d-a92f-95d27af2e7fb:member-system-api:1.0.0:raml:zip:member-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <flow name="member-system-api-main">
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+   <flow name="member-system-api-main">
         <http:listener config-ref="member-system-api-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
@@ -14,86 +10,31 @@
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="member-system-api-config" />
-        <error-handler>
-            <on-error-propagate type="APIKIT:BAD_REQUEST">
-                <ee:transform>
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+        <ee:transform doc:name="Transform Message" doc:id="7c80bc28-9f91-41a8-ba7e-14b62572ca4b" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="requestPayload" ><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Bad request"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform>
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+payload]]></ee:set-variable>
+				<ee:set-variable variableName="requestHeader" ><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
-                <ee:transform>
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+attributes.headers]]></ee:set-variable>
+				<ee:set-variable variableName="reuestQueryParam" ><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Method not allowed"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
-                <ee:transform>
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+attributes.queryParams]]></ee:set-variable>
+				<ee:set-variable variableName="requestUriParam" ><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Not acceptable"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
-                <ee:transform>
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Unsupported media type"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
-                <ee:transform>
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Not Implemented"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
+attributes.uriParams]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<apikit:router config-ref="member-system-api-config" />
+        <error-handler ref="globalErrorHandlingError_Handler">
+            
         </error-handler>
     </flow>
     <flow name="member-system-api-console">
@@ -107,21 +48,7 @@ output application/json
             </http:error-response>
         </http:listener>
         <apikit:console config-ref="member-system-api-config" />
-        <error-handler>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform>
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-        </error-handler>
+		<error-handler ref="globalErrorHandlingError_Handler" />
     </flow>
     <flow name="patch:\members\(memberId):application\json:member-system-api-config">
         <ee:transform>
@@ -129,109 +56,57 @@ output application/json
                 <ee:set-variable variableName="memberId">attributes.uriParams.'memberId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
+        <flow-ref doc:name="update-member-implementationFlow" doc:id="cbd95ea5-2781-476f-b8dd-7d8abe9f753d" name="update-member-implementationFlow"/>
+		<ee:transform>
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
   msg: "success operation",
-  code: 400,
+  code: 200,
   data: {
     memberId: "Raj1245"
   },
-  success: false
+  success: true
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
     </flow>
     <flow name="get:\members:member-system-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  msg: "failed operation",
-  code: 400,
-  success: false,
-  error: {
-    "type": "BAD_REQUEST",
-    title: "Invalid Request",
-    details: "The input contains invalid data"
-  }
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <logger level="INFO" doc:name="Logger" doc:id="92344c88-ca85-4bbc-9581-950258c9a96c" message="Request Received for POST member SAPI for transactionId : #[vars.requestHeader.'X-Cms-TransactionId']"/>
+		<flow-ref doc:name="get-member-list-implementationFlow" doc:id="ca7114e5-2491-41e4-94f1-eba4d989c43e" name="get-member-list-implementationFlow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="93d50a0b-9776-4bdb-a976-94aafef2e941" message="Response Sent for POST member SAPI for transactionId : #[vars.requestHeader.'X-Cms-TransactionId']"/>
     </flow>
     <flow name="get:\members\(memberId):member-system-api-config">
-        <ee:transform>
+        <logger level="INFO" doc:name="Logger" doc:id="e8dd99a6-98a1-479c-9f60-a44ae815f98f" message="Request Received for POST member SAPI for transactionId : #[vars.requestHeader.'X-Cms-TransactionId']"/>
+		<ee:transform>
             <ee:variables>
                 <ee:set-variable variableName="memberId">attributes.uriParams.'memberId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  firstName: "Naveen",
-  lastName: "Raj",
-  maritalStatus: "Unmarried",
-  title: "Mr",
-  gender: "Male",
-  occupation: "Engineer",
-  registrationChannel: "WFC_MP",
-  preferredName: "Nav",
-  identity: {
-    password: "testing",
-    phoneCountry: "86",
-    phoneNumber: "18888888887",
-    email: "emailNaveen001@email.com"
-  },
-  address: {
-    country: "India",
-    phoneCountry: "86",
-    city: "HongKong",
-    area: "CentralAndWesternDistrict",
-    province: "HongKongIsland",
-    placeOfResidence: "12/3 Kamaraj Street"
-  }
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="get-member-deatails-implementationFlow" doc:id="19b6ffe4-54f3-42d0-82f3-0d805c701938" name="get-member-deatails-implementationFlow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="29b5c0d8-0d8a-4350-89b4-de6a07e8051a" message="Response Sent for POST member SAPI for transactionId : #[vars.requestHeader.'X-Cms-TransactionId']"/>
     </flow>
     <flow name="post:\members:application\json:member-system-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  msg: "success operation",
-  code: 400,
-  data: {
-    memberId: "Raj1245"
-  },
-  success: false
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <logger level="INFO" doc:name="Logger" doc:id="d9ea7f1f-d39d-4c53-afb0-8a9ceed59cba" message="Request Received for POST member SAPI for transactionId : #[vars.requestHeader.'X-Cms-TransactionId']"/>
+		<flow-ref doc:name="post-member-implementationFlow" doc:id="735adb95-cf5c-4cc3-a5e9-950a599827c3" name="post-member-implementationFlow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0ad178fd-ee88-4376-bef2-3630237061d9" message="Response Sent for POST member SAPI for transactionId : #[vars.requestHeader.'X-Cms-TransactionId']"/>
     </flow>
     <flow name="post:\members\sync:application\json:member-system-api-config">
-        <ee:transform>
+        <flow-ref doc:name="post-member-sync-implementationFlow" doc:id="e7c759ce-f39a-401b-ae99-f6d9352682a5" name="post-member-sync-implementationFlow"/>
+		<ee:transform>
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
   msg: "success operation",
-  code: 400,
+  code: 200,
   data: {
     memberId: "Raj1245"
   },
-  success: false
+  success: true
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>

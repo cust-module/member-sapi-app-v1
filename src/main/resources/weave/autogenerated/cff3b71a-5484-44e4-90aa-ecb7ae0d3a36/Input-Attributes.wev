@@ -1,0 +1,30 @@
+%dw 2.0
+
+type auto_cff3b71a_5484_44e4_90aa_ecb7ae0d3a36_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|
+    "X-Cms-ClientId": String, 
+    "X-Cms-ClientSecret": String, 
+    "X-Cms-TransactionId": String, 
+    "X-Cms-Channel": "Mobile" | "WebApp", 
+    "X-Cms-OriginLanguage": "ch" | "en" | "cn", 
+    "X-Cms-OriginMarket": "United States" | "UK" | "India"
+  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+
